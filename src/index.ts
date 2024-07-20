@@ -1,25 +1,15 @@
 import { defineCommand, runMain } from "citty";
+import analyse  from "./modules/analyse/analyse";
 
 const main = defineCommand({
   meta: {
-    name: "clien-cli",
+    name: "bship-cli",
     version: "1.0.0",
-    description: "Bitship client cli",
+    description: "Bitship cli",
   },
-  args: {
-    name: {
-      type: "positional",
-      description: "Your name",
-      required: true,
-    },
-    friendly: {
-      type: "boolean",
-      description: "Use friendly greeting",
-    },
-  },
-  run({ args }) {
-    console.log(`${args.friendly ? "Hi" : "Greetings"} ${args.name}!`);
-  },
+  subCommands: {
+    analyse,
+  }
 });
 
 runMain(main);
