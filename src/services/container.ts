@@ -10,6 +10,7 @@ const runContainer = async (opts: RunOptions) => {
   const command = spawn('docker', [
     'run', '--rm',
     '--name', opts.containerName,
+    '-w', '/app',
     opts.image, ...opts.script.split(' ')
   ]);
 
@@ -33,4 +34,6 @@ interface RunOptions {
   image: string;
   script: string;
   detouched?: boolean;
+  ports?: string[];
+  volumes?: string[];
 }

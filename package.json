@@ -4,8 +4,11 @@
   "description": "",
   "license": "MIT",
   "main": "index.js",
+  "bin": {
+    "client-cli": "bin/bin.js"
+  },
   "scripts": {
-    "start": "node dist/index.cjs.js",
+    "start": "npx client-cli",
     "dev": "rollup -c --watch",
     "build": "rollup -c",
     "lint": "eslint ./src --ext .vue,.js,.ts,.cjs,.mjs"

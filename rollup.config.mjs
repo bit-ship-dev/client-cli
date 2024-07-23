@@ -8,7 +8,7 @@ export default {
   input: 'src/index.ts', // Adjust the input file as needed
   output: [
     {
-      file: 'dist/index.cjs.js',
+      file: 'dist/index.cjs',
       format: 'cjs',
       sourcemap: true,
     },

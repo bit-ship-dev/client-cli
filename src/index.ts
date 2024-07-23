@@ -1,6 +1,8 @@
 import { defineCommand, runMain } from "citty";
 import analyse  from "./modules/analyse/analyse";
 
+import run from "./modules/run/run";
+
 const main = defineCommand({
   meta: {
     name: "bship-cli",
@@ -9,6 +11,7 @@ const main = defineCommand({
   },
   subCommands: {
     analyse,
+    run
   }
 });
 
