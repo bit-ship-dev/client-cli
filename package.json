@@ -7,6 +7,9 @@
   "bin": {
     "client-cli": "bin/bin.js"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "start": "npx client-cli",
     "dev": "rollup -c --watch",
