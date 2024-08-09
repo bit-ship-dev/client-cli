@@ -1,8 +1,8 @@
 {
-  "name": "client-cli",
-  "version": "1.0.0",
-  "description": "",
-  "license": "MIT",
+  "name": "@bit-ship/cli",
+  "public": true,
+  "version": "0.0.1",
+  "description": "Bitship CLI",
   "main": "index.js",
   "bin": {
     "client-cli": "bin/bin.js"
