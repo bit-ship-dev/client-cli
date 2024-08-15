@@ -1,7 +1,6 @@
 import { defineCommand, runMain } from "citty";
-import analyse  from "./modules/analyse/analyse";
 
-import run from "./modules/run/run";
+
 
 const main = defineCommand({
   meta: {
@@ -10,8 +9,8 @@ const main = defineCommand({
     description: "Bitship cli",
   },
   subCommands: {
-    analyse,
-    run
+    analyse: () => import("./modules/analyse/analyse").then((r) => r.default),
+    run:() => import("./modules/run/run").then((r) => r.default),
   }
 });
 

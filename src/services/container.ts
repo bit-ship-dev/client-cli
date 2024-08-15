@@ -1,5 +1,5 @@
 import {spawn} from 'child_process';
-import chalk from "chalk";
+// import chalk from "chalk";
 
 
 export const useContainer = () => ({
@@ -7,10 +7,14 @@ export const useContainer = () => ({
 })
 
 const runContainer = async (opts: RunOptions) => {
+
+  const volumes = opts.volumes?  ['-v', ...opts.volumes] : []
   const command = spawn('docker', [
     'run', '--rm',
     '--name', opts.containerName,
     '-w', '/app',
+    '-e', ...formatEnv(opts.env),
+    ...volumes,
     opts.image, ...opts.script.split(' ')
   ]);
 
@@ -20,7 +24,7 @@ const runContainer = async (opts: RunOptions) => {
       console.log(output)
     }
 
-  log(chalk.bgMagentaBright('-------------------------- running task'))
+  // log(chalk.bgMagentaBright('-------------------------- running task'))
   command.stdout.on('data', (data: any) => log(`${data}`));
   command.stderr.on('data', (data: any) => log(`${data}`));
   command.on('close', (code: any) =>
@@ -29,6 +33,10 @@ const runContainer = async (opts: RunOptions) => {
 
 
 
+function formatEnv(env: any) {
+  return Object.entries(env).map(([key, value]) => `${key}=${value}`)
+}
+
 interface RunOptions {
   containerName: string;
   image: string;
@@ -36,4 +44,7 @@ interface RunOptions {
   detouched?: boolean;
   ports?: string[];
   volumes?: string[];
+  env?: {
+    [key: string]: string
+  }
 }
