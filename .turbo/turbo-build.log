@@ -1,0 +1,8 @@
+
+> @bit-ship/cli@0.0.1 build
+> rollup -c
+
+[1G[0K[36m
+[1msrc/index.ts[22m → [1mdist/index.cjs[22m...[39m
+[32mcreated [1mdist/index.cjs[22m in [1m2.6s[22m[39m
+[1G[0K\[1G[0K
