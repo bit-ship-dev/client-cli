@@ -1,5 +1,0 @@
-
-> @bit-ship/cli@0.0.1 lint
-> eslint ./src --ext .vue,.js,.ts,.cjs,.mjs
-
-[1G[0K
