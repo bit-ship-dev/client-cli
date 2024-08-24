@@ -1,6 +1,9 @@
 # Coverage directory used by imager like istanbul
 coverage
 
+
+.bit-ship
+
 # Dependency directories
 node_modules/
 

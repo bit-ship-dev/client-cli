@@ -6,7 +6,7 @@ export const useContainer = () => ({
   runContainer
 })
 
-const runContainer = async (opts: RunOptions) => {
+const runContainer = async (opts: RunOptions) => new Promise((resolve, reject) => {
 
   const volumes = opts.volumes?  ['-v', ...opts.volumes] : []
   const command = spawn('docker', [
@@ -27,9 +27,11 @@ const runContainer = async (opts: RunOptions) => {
   // log(chalk.bgMagentaBright('-------------------------- running task'))
   command.stdout.on('data', (data: any) => log(`${data}`));
   command.stderr.on('data', (data: any) => log(`${data}`));
-  command.on('close', (code: any) =>
-    log(`--------------------------/ task finished code: ${code}`));
-}
+  command.on('close', (code: any) => {
+    resolve(true)
+    log(`--------------------------/ task finished code: ${code}`)
+  });
+})
 
 
 
