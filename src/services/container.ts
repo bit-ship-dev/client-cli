@@ -1,16 +1,20 @@
 import {spawn} from 'child_process';
-import chalk from "chalk";
+// import chalk from "chalk";
 
 
 export const useContainer = () => ({
   runContainer
 })
 
-const runContainer = async (opts: RunOptions) => {
+const runContainer = async (opts: RunOptions) => new Promise((resolve, reject) => {
+
+  const volumes = opts.volumes?  ['-v', ...opts.volumes] : []
   const command = spawn('docker', [
     'run', '--rm',
     '--name', opts.containerName,
     '-w', '/app',
+    '-e', ...formatEnv(opts.env),
+    ...volumes,
     opts.image, ...opts.script.split(' ')
   ]);
 
@@ -20,14 +24,20 @@ const runContainer = async (opts: RunOptions) => {
       console.log(output)
     }
 
-  log(chalk.bgMagentaBright('-------------------------- running task'))
+  log('-------------------------- running task')
   command.stdout.on('data', (data: any) => log(`${data}`));
   command.stderr.on('data', (data: any) => log(`${data}`));
-  command.on('close', (code: any) =>
-    log(`--------------------------/ task finished code: ${code}`));
+  command.on('close', (code: any) => {
+    resolve(true)
+    log(`--------------------------/ task finished code: ${code}`)
+  });
+})
+
+
+
+function formatEnv(env: any) {
+  return Object.entries(env).map(([key, value]) => `${key}=${value}`)
 }
-
-
 
 interface RunOptions {
   containerName: string;
@@ -36,4 +46,7 @@ interface RunOptions {
   detouched?: boolean;
   ports?: string[];
   volumes?: string[];
+  env?: {
+    [key: string]: string
+  }
 }

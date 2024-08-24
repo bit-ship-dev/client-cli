@@ -1,18 +1,24 @@
 import { defineCommand, runMain } from "citty";
-import analyse  from "./modules/analyse/analyse";
+import {setupConsola} from "./services/consola";
+import {setupConfig} from "./services/config";
+import {setupStorage} from "./services/storage";
 
-import run from "./modules/run/run";
 
 const main = defineCommand({
   meta: {
-    name: "bship-cli",
+    name: "bit-ship",
     version: "1.0.0",
-    description: "Bitship cli",
+    description: "Bit-Ship CLI https://bit-ship.dev/",
   },
   subCommands: {
-    analyse,
-    run
+    analyse: () => import("./modules/analyse/analyse").then((r) => r.default),
+    run:() => import("./modules/run/run").then((r) => r.default),
+    settings:() => import("./modules/settings/settings").then((r) => r.default),
   }
 });
 
+
+setupStorage();
+setupConfig();
+setupConsola();
 runMain(main);

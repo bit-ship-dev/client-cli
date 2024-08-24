@@ -8,8 +8,9 @@ export default {
   input: 'src/index.ts', // Adjust the input file as needed
   output: [
     {
-      file: 'dist/index.cjs',
-      format: 'cjs',
+      dir: 'dist',
+      format: 'es',
+      preserveModules: true,
       sourcemap: true,
     },
   ],
