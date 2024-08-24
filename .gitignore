@@ -1,4 +1,4 @@
-# Coverage directory used by tools like istanbul
+# Coverage directory used by imager like istanbul
 coverage
 
 # Dependency directories
@@ -32,5 +32,10 @@ node_modules/
 .env.production.local
 .env.local
 
+.turbo
+
 
 dist
+
+# Sentry Config File
+.env.sentry-build-plugin
