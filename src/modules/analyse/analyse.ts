@@ -1,12 +1,16 @@
 import consola from "consola";
 import {defineCommand} from "citty";
 import {ofetch} from "ofetch";
-import type {Report, Config} from '@repo/ts/types/index.d';
+import type {Report} from '@repo/ts/types/index.d';
 import {readFile, unlink} from 'fs/promises'
 import {useConfig} from "../../services/config";
 import {useContainer} from '../../services/container';
+import {ClientConfig} from '../../services/config.d'
+
 
 const {setConfig} = useConfig();
+
+type AnalyserReport  = Report['1.0']
 
 
 export default defineCommand({
@@ -25,10 +29,15 @@ export default defineCommand({
   async run({ args }) {
     const report = await getReport(args.path)
     const tools = await fetchTools()
-    const config = await manualValidation(report, tools)
-    consola.start('We are preparing image for you');
+    const {dependencies, tasks} = await manualValidation(report, tools)
 
-    await setConfig(config);
+    consola.start('We are preparing image for you');
+    // TODO call build endpoint
+    await setConfig({
+      version: '1.0',
+      dependencies,
+      tasks
+    });
     consola.success('Configuration saved');
   },
 });
@@ -37,6 +46,7 @@ export default defineCommand({
 async function getReport(path: string): Promise<Report> {
   const reportFile = 'tmp_report.json';
   consola.start(`Analyse your project ${path}`);
+  // TODO pull container from registry
   const {runContainer} = useContainer();
   await runContainer({
     containerName : 'analyser-cli-'+Date.now(),
@@ -57,58 +67,85 @@ async function getReport(path: string): Promise<Report> {
   return report;
 }
 
-async function manualValidation(report: Report, tools): Promise<Config>  {
-  report.scripts.build.sort(highToLow);
-  report.scripts.start.sort(highToLow);
-  report.scripts.dev.sort(highToLow);
-  report.scripts.qa.sort(highToLow);
+
+
+type LLLLL =  {
+  tasks: ClientConfig['tasks']
+  dependencies: ClientConfig['dependencies']
+}
+
+
+
+async function manualValidation(report: AnalyserReport, tools): Promise<LLLLL>  {
+  report.tasks.build.sort(highToLow);
+  report.tasks.start.sort(highToLow);
+  report.tasks.dev.sort(highToLow);
+  report.tasks.qa.sort(highToLow);
 
   consola.box('Scripts Configuration');
 
   const build = await consola.prompt('What is your build script?', {
     placeholder: 'Your build script',
-    initial: report.scripts.build[0].script,
+    initial: report.tasks.build[0].script,
   });
 
   const dev = await consola.prompt('What is your dev script?', {
     placeholder: 'Your dev script',
-    initial: report.scripts.dev[0].script,
+    initial: report.tasks.dev[0].script,
   });
 
   const start = await consola.prompt('What is your start script?', {
     placeholder: 'Your start script',
-    initial: report.scripts.start?.[0]?.script || '',
+    initial: report.tasks.start?.[0]?.script || '',
   });
 
   consola.box('Dependencies configuration');
 
-  const formattedOptions = Object.entries(report.OSDependencies)
-    .map(([key, value]) => {
-      return {value: key, label: `${key} -> ${value.version}`}
-    })
 
-  const dependencies = await consola.prompt(
-    'Found these dependencies. Would you like to remove any?',
-    {
-      type: 'multiselect',
-      options: formattedOptions,
-      required: false,
-    }
-  );
+  consola.info('Dependencies found in your project');
+  Object.keys(report.dependencies).forEach((key) => {
+    // @ts-ignore
+    consola.log(`${key} -> ${report.dependencies[key].version}`)
+  })
+
+  const options = Object.keys(tools).map((tool) =>
+    ({label: tools[tool].label, value: tool, hint: tools[tool].description})
+  ).filter((tool) => !Object.keys(report.dependencies).includes(tool.value))
 
   const pickedTools = await consola.prompt('Add any more tooling', {
     type: 'multiselect',
     required: false,
-    options: Object.keys(tools).map((tool) =>
-      ({label: tools[tool].label, value: tool, hint: tools[tool].description})
-    )
+    options: options
   });
 
-  return
+  // @ts-ignore
+  const pickedDeps = pickedTools.reduce((acc, key: string) => {
+    // @ts-ignore
+    acc[key] = tools[key].versions.latest
+    return acc
+  }, {})
+
+
+  const foundDependencies = Object.keys(report.dependencies).reduce((acc, key) => {
+    // @ts-ignore
+    acc[key] = report.dependencies[key].version
+    return acc
+  }, {})
+
+  return {
+    tasks: {
+      build: { script: build },
+      dev: { script: dev },
+      start: { script: start }
+    },
+    // @ts-ignore
+    dependencies: {...pickedDeps, ...foundDependencies},
+  }
 }
 
 
-async function fetchTools() {
+async function fetchTools()    {
+  // TODO change to prod API
   const tools = await ofetch('http://localhost:3000/api/public/v1/tools')
   return tools
 }

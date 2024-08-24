@@ -19,6 +19,6 @@ const main = defineCommand({
 
 
 setupStorage();
-setupConfig('./');
+setupConfig();
 setupConsola();
 runMain(main);

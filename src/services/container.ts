@@ -24,7 +24,7 @@ const runContainer = async (opts: RunOptions) => new Promise((resolve, reject) =
       console.log(output)
     }
 
-  // log(chalk.bgMagentaBright('-------------------------- running task'))
+  log('-------------------------- running task')
   command.stdout.on('data', (data: any) => log(`${data}`));
   command.stderr.on('data', (data: any) => log(`${data}`));
   command.on('close', (code: any) => {
