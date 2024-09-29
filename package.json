@@ -14,8 +14,8 @@
     "start": "node ./dist/apps/client-cli/src/index.js",
     "dev": "rollup -c --watch",
     "build": "rollup -c",
-    "mkdist": "npx mkdist .",
-    "lint": "eslint ./src --ext .vue,.js,.ts,.cjs,.mjs"
+    "mkdist": "npx mkdist ."
+
   },
   "dependencies": {
     "@sentry/node": "^8.26.0",
