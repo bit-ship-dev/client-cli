@@ -5,7 +5,7 @@ import type {Report} from '@repo/ts/types/index.d';
 import {readFile, unlink} from 'fs/promises'
 import {useConfig} from "../../services/config";
 import {useContainer} from '../../services/container';
-import {ClientConfig} from '../../services/config.d'
+import {Config} from '@repo/ts/types/config'
 
 
 const {setConfig} = useConfig();
@@ -29,10 +29,12 @@ export default defineCommand({
   async run({ args }) {
     const report = await getReport(args.path)
     const tools = await fetchTools()
+    // @ts-ignore
     const {dependencies, tasks} = await manualValidation(report, tools)
 
     consola.start('We are preparing image for you');
     // TODO call build endpoint
+    // @ts-ignore
     await setConfig({
       version: '1.0',
       dependencies,
@@ -70,13 +72,13 @@ async function getReport(path: string): Promise<Report> {
 
 
 type LLLLL =  {
-  tasks: ClientConfig['tasks']
-  dependencies: ClientConfig['dependencies']
+  tasks: Config['1.0']['tasks']
+  dependencies: Config['1.0']['dependencies']
 }
 
 
 
-async function manualValidation(report: AnalyserReport, tools): Promise<LLLLL>  {
+async function manualValidation(report: AnalyserReport, tools: any): Promise<LLLLL>  {
   report.tasks.build.sort(highToLow);
   report.tasks.start.sort(highToLow);
   report.tasks.dev.sort(highToLow);
